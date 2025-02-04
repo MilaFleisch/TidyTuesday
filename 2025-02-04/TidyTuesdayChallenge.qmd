@@ -1,0 +1,54 @@
+---
+title: "Tidy Tuesday Challenge"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+install.packages("tidytuesdayR")
+library("tidyverse")
+
+```
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2025-01-21')
+View(tuesdata)
+exped_tidy <- tuesdata$exped_tidy
+peaks_tidy <- tuesdata$peaks_tidy
+View(exped_tidy)
+View(peaks_tidy )
+```
+
+```{r}
+# exped_tidy%>%
+#   count(exped_tidy$SUCCESS1)
+# exped_tidy%>%
+#   count(exped_tidy$SUCCESS2)
+# exped_tidy%>%
+#   count(exped_tidy$SUCCESS3)
+# exped_tidy%>%
+#   count(exped_tidy$SUCCESS4)
+
+long_ver<-exped_tidy%>%
+  pivot_longer(cols = star

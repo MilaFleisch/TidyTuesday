@@ -10,9 +10,42 @@ Quarto enables you to weave together content and executable code into a finished
 
 ## Running Code
 
-```{r}
+```{r eval=TRUE}
 tuesdata <- tidytuesdayR::tt_load('2025-04-01')
-View(tuesdata$pokemon_df)
-
+# View(tuesdata$pokemon_df)
+pokemon<-tuesdata$pokemon_df
+pokemon<-as.data.frame(pokemon)
 ```
 
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+pokemon <- pokemon %>% 
+  mutate(total_attack = attack + special_attack)%>%
+  mutate(total_defense = defense + special_defense)%>%
+  mutate(attack_defense_ratio=total_attack/total_defense)%>%
+  mutate(special_attack_ratio=special_attack/total_attack)
+```
+
+```{r}
+ggplot(pokemon, aes(x = base_experience, y = total_attack, size = special_attack_ratio, color = attack_defense_ratio)) +
+  geom_point(alpha = 0.6) +
+  labs(
+    title = "What do more experienced Pokemon behave like?",
+    subtitle = "Base Experience vs. Pokemon Attack",
+    x = "Base Experience",
+    y = "Total Attack",
+    color = "Attack Defense Ratio",
+    size = "Special Attack Ratio"
+  ) +
+  theme_minimal() +
+  scale_size_continuous(range = c(2, 10))+  # Adjust size range
+  scale_color_gradient(low = "#9370DB", high = "#00BFFF") 
+```
+
+My research question is: What do more experienced Pokémon behave like? Are they more likely to prioritize attack over defense? When they attack, do they prefer special attacks over physical attacks?
+
+From the graph, we can see that higher base experience leads to higher total attack. However, base experience doesn’t dominate the attack-defense ratio, as Pokémon generally favor attack over defense. Base experience also does not determine special attack preference.

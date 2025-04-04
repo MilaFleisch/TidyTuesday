@@ -1,0 +1,18 @@
+---
+title: "TidyTuesdayApril1"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2025-04-01')
+View(tuesdata$pokemon_df)
+
+```
+

@@ -1,0 +1,71 @@
+---
+title: "tidytuesday 0422"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+FTZtimes<-read_csv("daily_accidents_420_time.csv")
+FTZ<-read_csv("daily_accidents_420.csv")
+acc<-read_csv("daily_accidents.csv")
+view(FTZ)
+view(FTZtimes)
+view(acc)
+```
+
+```{r}
+total <- FTZ %>%
+  left_join(FTZtimes, by = "date") %>%
+  drop_na()%>%
+  mutate(date = as.Date(date)) %>%  # Ensure date is in Date format
+  filter(year(date) >= 2010)
+
+daily_totals <- total %>%
+  mutate(date = as.Date(date),
+         year = year(date),
+         day_of_year = yday(date)) %>%
+  filter(year >= 2010) %>%
+  group_by(date, year, day_of_year) %>%
+  summarize(
+    total_fatalities = sum(fatalities_count.x, na.rm = TRUE),
+    d420_fatalities = sum(fatalities_count.y[d420 == TRUE], na.rm = TRUE)
+  )
+
+years <- unique(year(daily_totals$date))
+april20_dates <- as.Date(paste0(years, "-04-20"))
+```
+
+```{r}
+ggplot(daily_totals, aes(x = as.Date(date))) +
+  geom_point(aes(y = total_fatalities), color = "#377EB8", alpha = 0.3) +
+  geom_point(aes(y = d420_fatalities), color = "#E41A1C", alpha = 0.3) +
+     geom_smooth(aes(y = total_fatalities, color = "Total Fatalities Trend"), 
+              method = "loess", se = FALSE, linewidth = 1.5) +
+  geom_smooth(aes(y = d420_fatalities, color = "Daily Afternoon Fatalities Trend"), 
+              method = "loess", se = FALSE, linewidth = 1.5) +
+  geom_vline(xintercept = april20_dates, 
+             linetype = "dashed", color = "darkgreen", alpha = 0.5) +
+  annotate("text", 
+           x = april20_dates[1] + days(10), 
+           y = max(daily_totals$total_fatalities) * 0.95,
+           label = "4/20", color = "darkgreen", size = 3) +
+  labs(
+    title = "Daily Fatalities Comparison",
+    subtitle = "Total vs. Afternoon Period (4:30 PM - 12:59 PM)",
+    x = "Year",
+    y = "Number of Fatalities"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 16),
+    axis.title = element_text(size = 12)
+  ) 
+```
+
+I am interested in comparing total fatalities and fatalities during 4:20pm - 11:59pm as it might imply special causualities in the dataset. From the graph, we can see that the daily afternoon fatalities are way fewer than the total, which means the other period dominates the proportion. The afternoon fatalities are relatively stable over time, while the total fatalities fluctuate a little bit in a reasonable range over time. In the dataset, 4/20 is another logical variables. I am interested in this special day as well. In order to look closely about this day, I focus on the recent years after 2010. And I believe the fatalities of that day are on average.
